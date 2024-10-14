@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "web-scraping"
+version = "0.1.0"
+description = "web-scraping project"
+authors = ["mr-cliche-git <mr.cliche7@gmail.com>"]
+license = "Closed source"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.0.3"
+requests = "^2.32.3"
+flask-restx = "^1.3.0"
+selenium = "^4.25.0"
+webdriver-manager = "^4.0.2"
+spotipy = "^2.24.0"
+pandas = "^2.2.3"
+fastapi = "^0.115.0"
+uvicorn = "^0.31.0"
+bs4 = "^0.0.2"
+flask-sqlalchemy = "^3.1.1"
+python-dotenv = "^1.0.1"
+apscheduler = "^3.10.4"
+flask-cors = "^5.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

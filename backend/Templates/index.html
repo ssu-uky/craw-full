@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shadcn/ui/dist/shadcn.css"> 
+    <style>
+        body {
+            background-color: #1f1f1f; /* 검은색 배경 */
+            color: #ffffff; /* 흰색 글자 */
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: left; /* 왼쪽 정렬 */
+            margin-bottom: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between; /* 버튼을 오른쪽으로 배치 */
+            align-items: center;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            background-color: #333; /* 헤더와 같은 색상 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #555; /* 마우스 오버 시 색상 변화 */
+        }
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .chart {
+            background: #2c2c2c; /* 차트 배경 */
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background-color: #333; /* 헤더 색상 */
+            color: #ffffff; /* 헤더 글자 색상 */
+        }
+        a {
+            color: #ffffff; /* 링크 색상 */
+            text-decoration: none; /* 밑줄 제거 */
+        }
+        a:hover {
+            text-decoration: underline; /* 마우스 오버 시 밑줄 */
+        }
+        img.thumbnail {
+            width: 50px; /* 썸네일 크기 */
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Daily Rank</h1>
+            <div class="button-group">
+                <button onclick="showChart('apple')">Apple Music</button>
+                <button onclick="showChart('youtube')">YouTube Music</button>
+                <button onclick="showChart('spotify')">Spotify</button>
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <div class="chart" id="apple-chart">
+                <h2>Apple Music</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th></th>
+                            <th>곡명</th>
+                            <th>가수명</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for track in apple_music %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><img class="thumbnail" src="{{ track.thumbnail_link }}" alt="{{ track.title }} 썸네일"></td>
+                                <td><a href="{{ track.link }}" target="_blank">{{ track.title }}</a></td>
+                                <td><a href="{{ track.artist_link }}" target="_blank">{{ track.artist }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart hidden" id="youtube-chart">
+                <h2>YouTube Music</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th></th>
+                            <th>곡명</th>
+                            <th>가수</th>
+                            <th>조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for track in youtube %}
+                            <tr>
+                                <td>{{ track.current_position }}</td>
+                                <td><img class="thumbnail" src="{{ track.thumbnail_link }}" alt="{{ track.title }} 썸네일"></td>
+                                <td><a href="{{ track.song_link }}" target="_blank">{{ track.title }}</a></td>
+                                <td><a href="{{ track.artist_link }}" target="_blank">{{ track.artist }}</a></td>
+                                <td>{{ track.views }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="chart hidden" id="spotify-chart">
+                <h2>Spotify</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th></th>
+                            <th>곡명</th>
+                            <th>가수명</th>
+                            <th>재생 횟수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for track in spotify %}
+                            <tr>
+                                <td>{{ track.current_position }}</td>
+                                <td><img class="thumbnail" src="{{ track.thumbnail_link }}" alt="{{ track.title }} 썸네일"></td>
+                                <td><a href="{{ track.song_link }}" target="_blank">{{ track.title }}</a></td>
+                                <td><a href="{{ track.artist_link }}" target="_blank">{{ track.artist }}</a></td>
+                                <td>{{ track.streams }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@shadcn/ui/dist/shadcn.js"></script>
+    <script>
+        // 기본 차트 설정
+        document.getElementById('apple-chart').style.display = 'block';
+        document.getElementById('youtube-chart').style.display = 'none';
+        document.getElementById('spotify-chart').style.display = 'none';
+
+        function showChart(chartType) {
+            // 모든 차트를 숨김
+            document.getElementById('apple-chart').style.display = 'none';
+            document.getElementById('youtube-chart').style.display = 'none';
+            document.getElementById('spotify-chart').style.display = 'none';
+
+            // 선택된 차트만 보임
+            if (chartType === 'apple') {
+                document.getElementById('apple-chart').style.display = 'block';
+            } else if (chartType === 'youtube') {
+                document.getElementById('youtube-chart').style.display = 'block';
+            } else if (chartType === 'spotify') {
+                document.getElementById('spotify-chart').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
